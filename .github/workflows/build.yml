@@ -6,8 +6,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: unzip -q ./*.zip
-      - name: Remove custom font
-        run: rm -f solar-client/src/main/resources/assets/minecraft/font/default.json
+      - name: Download script fonts
+        run: |
+          F=solar-client/src/main/resources/assets/solarclient/font
+          B=https://github.com/google/fonts/raw/main/ofl
+          get() {
+            if curl -fsSL --max-time 60 -o "$F/$1.ttf" "$2" && [ -s "$F/$1.ttf" ]; then
+              printf '{"providers":[{"type":"ttf","file":"solarclient:%s.ttf","shift":[0,0],"size":11.0,"oversample":4.0},{"type":"reference","id":"minecraft:default"}]}' "$1" > "$F/lyrics_$1.json"
+            else
+              rm -f "$F/$1.ttf"
+            fi
+          }
+          get pacifico "$B/pacifico/Pacifico-Regular.ttf"
+          get lobster "$B/lobster/Lobster-Regular.ttf"
+          get yellowtail "$B/yellowtail/Yellowtail-Regular.ttf"
+          get kaushan "$B/kaushanscript/KaushanScript-Regular.ttf"
+          get courgette "$B/courgette/Courgette-Regular.ttf"
+          get damion "$B/damion/Damion-Regular.ttf"
+          get norican "$B/norican/Norican-Regular.ttf"
+          get dancing "$B/dancingscript/DancingScript%5Bwght%5D.ttf"
+          get caveat "$B/caveatbrush/CaveatBrush-Regular.ttf"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
